@@ -1,0 +1,6 @@
+name=tree
+version=2.3.2
+source=https://oldmanprogrammer.net/tar/tree/tree-2.3.2.tgz
+sha256=6b941dd6cbecfb4d3250700e4d08d8e0c251488981dd4868b90d744234300e21
+build=make
+install=make DESTDIR="$DESTDIR/usr/local/bin" MANDIR="$DESTDIR/usr/local/share/man" install
