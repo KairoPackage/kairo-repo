@@ -125,9 +125,7 @@ def read_config():
 
             key, value = line.split("=", 1)
 
-            config[
-                key.strip()
-            ] = value.strip()
+            config[key.strip()] = value.strip()
 
     return config
 
@@ -149,7 +147,7 @@ def write_repo_url(url):
 
 
 # -------------------------------------------------
-# REPOSITORY SYNC
+# REPOSITORY
 # -------------------------------------------------
 
 def sync_repository(url=None):
@@ -171,7 +169,6 @@ def sync_repository(url=None):
     print(
         f"Repository: {repo_url}"
     )
-
     print()
 
     if (
@@ -198,7 +195,6 @@ def sync_repository(url=None):
             print(
                 "Repository update failed."
             )
-
             return False
 
     else:
@@ -226,17 +222,14 @@ def sync_repository(url=None):
             print(
                 "Repository clone failed."
             )
-
             return False
 
     if not REMOTE_RECIPES_DIR.exists():
         print()
-
         print(
             "Repository synced, but it "
             "has no recipes/ directory."
         )
-
         return False
 
     count = len(
@@ -248,7 +241,6 @@ def sync_repository(url=None):
     )
 
     print()
-
     print(
         f"Sync complete. "
         f"{count} recipes available."
@@ -305,7 +297,6 @@ def self_update():
                 "Update failed: "
                 "downloaded file is missing."
             )
-
             return False
 
         if new_file.stat().st_size == 0:
@@ -313,7 +304,6 @@ def self_update():
                 "Update failed: "
                 "downloaded file is empty."
             )
-
             return False
 
         with open(
@@ -331,12 +321,7 @@ def self_update():
                 "Update failed: downloaded "
                 "file does not look like Kai."
             )
-
             return False
-
-        print(
-            "Download complete."
-        )
 
         shutil.copy2(
             current_file,
@@ -357,14 +342,8 @@ def self_update():
             )
 
         except subprocess.CalledProcessError:
-            print()
-
             print(
                 "Update replacement failed."
-            )
-
-            print(
-                "Restoring old version..."
             )
 
             try:
@@ -380,20 +359,14 @@ def self_update():
                     check=True,
                 )
 
-                print(
-                    "Previous version restored."
-                )
-
             except subprocess.CalledProcessError:
                 print(
-                    "Warning: automatic "
-                    "restore failed."
+                    "Warning: restore failed."
                 )
 
             return False
 
         print()
-
         print(
             "Kai updated successfully."
         )
@@ -463,7 +436,6 @@ def read_recipe(name):
         print(
             f"Package not found: {name}"
         )
-
         return None
 
     package = {}
@@ -554,13 +526,7 @@ def is_binary_package(package):
     value = package.get(
         "binary",
         "",
-    )
-
-    value = (
-        value
-        .strip()
-        .lower()
-    )
+    ).strip().lower()
 
     return value in (
         "true",
@@ -587,7 +553,6 @@ def search_package(name):
             f"No package found matching: "
             f"{name}"
         )
-
         return
 
     for package in matches:
@@ -615,14 +580,12 @@ def available_packages():
         print(
             "No packages available."
         )
-
         return
 
     print(
         f"Available packages "
         f"({len(packages)}):"
     )
-
     print()
 
     for name in packages:
@@ -666,7 +629,7 @@ def available_packages():
 
 
 # -------------------------------------------------
-# VERSION HANDLING
+# VERSION
 # -------------------------------------------------
 
 def version_key(version):
@@ -690,7 +653,6 @@ def version_key(version):
                     int(part),
                 )
             )
-
         else:
             result.append(
                 (
@@ -949,7 +911,6 @@ def check_system_dependencies(
         return True
 
     print()
-
     print(
         "Checking system dependencies..."
     )
@@ -978,7 +939,6 @@ def check_system_dependencies(
 
     if missing:
         print()
-
         print(
             "Missing system dependencies:"
         )
@@ -1021,7 +981,6 @@ def download_source(package):
         print(
             "Recipe has no source URL."
         )
-
         return None
 
     BUILD_DIR.mkdir(
@@ -1054,7 +1013,6 @@ def download_source(package):
     )
 
     print()
-
     print(
         f"Downloading "
         f"{name} {version}..."
@@ -1120,20 +1078,16 @@ def verify_source(
 
     if not expected:
         print()
-
         print(
             "Warning: recipe has no "
             "SHA256 checksum."
         )
-
         print(
             "Skipping source verification."
         )
-
         return True
 
     print()
-
     print(
         "Verifying SHA256..."
     )
@@ -1148,7 +1102,6 @@ def verify_source(
             f"Could not read downloaded "
             f"file: {error}"
         )
-
         return False
 
     if (
@@ -1156,26 +1109,20 @@ def verify_source(
         != expected.lower()
     ):
         print()
-
         print(
             "SHA256 verification FAILED."
         )
-
         print(
             f"Expected: {expected}"
         )
-
         print(
             f"Actual:   {actual}"
         )
-
         print()
-
         print(
             "Kai will not build "
             "this package."
         )
-
         return False
 
     print(
@@ -1217,7 +1164,6 @@ def extract_source(
     )
 
     print()
-
     print(
         f"Extracting "
         f"{archive.name}..."
@@ -1279,6 +1225,20 @@ def find_source_dir(
     return extract_dir
 
 
+def select_package_root(
+    package,
+    extract_dir,
+):
+    if is_binary_package(
+        package
+    ):
+        return extract_dir
+
+    return find_source_dir(
+        extract_dir
+    )
+
+
 # -------------------------------------------------
 # BUILD
 # -------------------------------------------------
@@ -1291,7 +1251,6 @@ def build_package(
         package
     ):
         print()
-
         print(
             "Binary package: "
             "skipping build."
@@ -1311,7 +1270,6 @@ def build_package(
         return False
 
     print()
-
     print(
         f"Building "
         f"{package.get('name')}..."
@@ -1334,16 +1292,13 @@ def build_package(
 
     except subprocess.CalledProcessError as error:
         print()
-
         print(
             f"Build failed with exit code "
             f"{error.returncode}"
         )
-
         return False
 
     print()
-
     print(
         "Build complete."
     )
@@ -1375,7 +1330,6 @@ def stage_package(
         print(
             "Recipe has no install command."
         )
-
         return None
 
     stage_dir = (
@@ -1400,7 +1354,6 @@ def stage_package(
     )
 
     print()
-
     print(
         f"Staging {name}..."
     )
@@ -1428,17 +1381,14 @@ def stage_package(
 
     except subprocess.CalledProcessError as error:
         print()
-
         print(
             f"Staging failed with "
             f"exit code "
             f"{error.returncode}"
         )
-
         return None
 
     print()
-
     print(
         "Staging complete."
     )
@@ -1473,7 +1423,7 @@ def get_staged_files(
 
 
 # -------------------------------------------------
-# CONFLICT CHECKS
+# CONFLICTS
 # -------------------------------------------------
 
 def check_install_conflicts(
@@ -1529,7 +1479,7 @@ def check_update_conflicts(
 
 
 # -------------------------------------------------
-# SAFE SYSTEM INSTALL
+# SAFE INSTALL
 # -------------------------------------------------
 
 def mode_string(path):
@@ -1545,9 +1495,6 @@ def safely_create_directory(
     source,
     destination,
 ):
-    # Never change ownership or permissions
-    # of an existing system directory.
-
     if destination.exists():
         return
 
@@ -1639,7 +1586,6 @@ def copy_stage_to_system(
     stage_dir,
 ):
     print()
-
     print(
         "Installing staged files safely..."
     )
@@ -1697,23 +1643,20 @@ def copy_stage_to_system(
 
     except subprocess.CalledProcessError:
         print()
-
         print(
             "System install failed."
         )
-
         return False
 
     return True
 
 
 # -------------------------------------------------
-# LINKER CACHE
+# LDCONFIG
 # -------------------------------------------------
 
 def refresh_linker_cache():
     print()
-
     print(
         "Refreshing linker cache..."
     )
@@ -1731,7 +1674,6 @@ def refresh_linker_cache():
         print(
             "Warning: ldconfig failed."
         )
-
         return False
 
     print(
@@ -1772,8 +1714,9 @@ def prepare_package(package):
     if extracted is None:
         return None
 
-    source_dir = find_source_dir(
-        extracted
+    source_dir = select_package_root(
+        package,
+        extracted,
     )
 
     if not build_package(
@@ -1789,7 +1732,7 @@ def prepare_package(package):
 
 
 # -------------------------------------------------
-# KAI DEPENDENCIES
+# DEPENDENCIES
 # -------------------------------------------------
 
 def install_dependencies(
@@ -1806,7 +1749,6 @@ def install_dependencies(
         return True
 
     print()
-
     print(
         "Checking Kai dependencies..."
     )
@@ -1815,7 +1757,6 @@ def install_dependencies(
 
         if dependency in dependency_stack:
             print()
-
             print(
                 "Dependency cycle detected:"
             )
@@ -1853,12 +1794,10 @@ def install_dependencies(
 
         if dependency_recipe is None:
             print()
-
             print(
                 f"Missing dependency recipe: "
                 f"{dependency}"
             )
-
             return False
 
         print(
@@ -1891,11 +1830,9 @@ def install_to_system(
         print(
             "No files were staged."
         )
-
         return False
 
     print()
-
     print(
         "Files to install:"
     )
@@ -1913,11 +1850,9 @@ def install_to_system(
 
     if conflicts:
         print()
-
         print(
             "Install stopped."
         )
-
         print(
             "These files already exist:"
         )
@@ -1928,7 +1863,6 @@ def install_to_system(
             )
 
         print()
-
         print(
             "Kai will not overwrite them."
         )
@@ -1948,7 +1882,6 @@ def install_to_system(
     refresh_linker_cache()
 
     print()
-
     print(
         f"Installed "
         f"{package.get('name')} "
@@ -1990,7 +1923,6 @@ def install_package(
     )
 
     print()
-
     print(
         f"Package: "
         f"{package_name}"
@@ -2010,12 +1942,10 @@ def install_package(
         package_name
     ):
         print()
-
         print(
             f"{package_name} is already "
             f"installed by Kai."
         )
-
         return True
 
     current_stack = (
@@ -2095,7 +2025,6 @@ def remove_old_update_files(
                 f"Failed to remove: "
                 f"{filename}"
             )
-
             return False
 
     return True
@@ -2111,7 +2040,6 @@ def update_package(name):
             f"{name} is not "
             f"installed by Kai."
         )
-
         return False
 
     recipe = read_recipe(
@@ -2150,30 +2078,24 @@ def update_package(name):
 
     if comparison == 0:
         print()
-
         print(
             f"{name} is already "
             f"up to date."
         )
-
         return True
 
     if comparison > 0:
         print()
-
         print(
             "Installed version is newer "
             "than the recipe."
         )
-
         print(
             "Kai will not downgrade it."
         )
-
         return False
 
     print()
-
     print(
         f"Updating {name}: "
         f"{old_version} -> "
@@ -2211,11 +2133,9 @@ def update_package(name):
 
     if conflicts:
         print()
-
         print(
             "Update stopped."
         )
-
         print(
             "Conflicting files:"
         )
@@ -2246,7 +2166,6 @@ def update_package(name):
     refresh_linker_cache()
 
     print()
-
     print(
         f"Updated {name} "
         f"{old_version} -> "
@@ -2261,7 +2180,6 @@ def update_all_packages():
         print(
             "No packages installed by Kai."
         )
-
         return
 
     packages = sorted(
@@ -2324,7 +2242,6 @@ def check_updates():
         print(
             "No packages installed by Kai."
         )
-
         return
 
     packages = sorted(
@@ -2379,13 +2296,11 @@ def check_updates():
             "All Kai packages "
             "are up to date."
         )
-
         return
 
     print(
         "Available updates:"
     )
-
     print()
 
     for (
@@ -2409,7 +2324,6 @@ def list_packages():
         print(
             "No packages installed by Kai."
         )
-
         return
 
     packages = sorted(
@@ -2423,14 +2337,12 @@ def list_packages():
         print(
             "No packages installed by Kai."
         )
-
         return
 
     print(
         f"Installed packages "
         f"({len(packages)}):"
     )
-
     print()
 
     for name in packages:
@@ -2458,7 +2370,6 @@ def remove_package(name):
             f"{name} is not "
             f"installed by Kai."
         )
-
         return
 
     print(
@@ -2505,7 +2416,6 @@ def remove_package(name):
                 f"Failed to remove "
                 f"{filename}"
             )
-
             return
 
     (
@@ -2516,7 +2426,6 @@ def remove_package(name):
     refresh_linker_cache()
 
     print()
-
     print(
         f"Removed {name} "
         f"successfully."
@@ -2547,7 +2456,6 @@ def main():
                 "Usage: "
                 "kai search <package>"
             )
-
             return
 
         search_package(
@@ -2563,7 +2471,6 @@ def main():
                 "Usage: "
                 "kai info <package>"
             )
-
             return
 
         info_package(
@@ -2576,7 +2483,6 @@ def main():
                 "Usage: "
                 "kai install <package>"
             )
-
             return
 
         install_package(
@@ -2588,7 +2494,6 @@ def main():
             update_package(
                 sys.argv[2]
             )
-
         else:
             update_all_packages()
 
@@ -2601,7 +2506,6 @@ def main():
                 "Usage: "
                 "kai remove <package>"
             )
-
             return
 
         remove_package(
@@ -2616,7 +2520,6 @@ def main():
             sync_repository(
                 sys.argv[2]
             )
-
         else:
             sync_repository()
 
@@ -2630,7 +2533,6 @@ def main():
         )
 
         print()
-
         show_help()
 
 
