@@ -1,0 +1,8 @@
+name=wf-shell
+version=0.10.0
+source=https://github.com/WayfireWM/wf-shell/archive/refs/tags/v0.10.0.tar.gz
+sha256=f90bf34ead49d996c950ce52cb6aca62fbaaffcedbbf35165edb4d82f970a3ff 
+system_depends=meson,ninja,pkg-config
+depends=
+build=meson setup build --prefix=/usr/local --buildtype=release
+install=DESTDIR="$DESTDIR" ninja -C build install
