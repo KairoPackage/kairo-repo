@@ -1,0 +1,8 @@
+name=bottom
+version=0.14.6
+source=https://github.com/ClementTsang/bottom/archive/refs/tags/0.14.6.tar.gz
+sha256=ec899586164423377ceaf0d15975b8cb4430e47f3c84db0394411048755c1412 
+system_depends=cargo
+depends=
+build=cargo build --release
+install=install -Dm755 target/release/btm "$DESTDIR/usr/local/bin/btm"
