@@ -5,4 +5,4 @@ sha256=21f18b687975f1decef998664ef6d292cf2379d9e4308a5b4cbb66af240341b3
 system_depends=node,npm
 depends=
 build=npm install --omit=dev
-install=mkdir -p "$DESTDIR/usr/local/lib/mapscii" "$DESTDIR/usr/local/bin" && cp -a . "$DESTDIR/usr/local/lib/mapscii/" && ln -s ../lib/mapscii/bin/mapscii "$DESTDIR/usr/local/bin/mapscii"
+install=mkdir -p "$DESTDIR/usr/local/lib/mapscii" "$DESTDIR/usr/local/bin" && cp -a . "$DESTDIR/usr/local/lib/mapscii/" && ln -s ../lib/mapscii/bin/mapscii.sh "$DESTDIR/usr/local/bin/mapscii"
