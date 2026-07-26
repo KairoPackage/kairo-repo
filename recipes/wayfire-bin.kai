@@ -1,0 +1,8 @@
+name=wayfire-bin
+version=0.10.1
+binary=true
+source=https://github.com/KairoPackage/kairo-repo/releases/download/wayfire-bin-0.10.1/wayfire-bin-0.10.1-x86_64.tar.gz
+sha256=1341bdfbd33b0197ce093d9d56dcfe067d4126143824484445ac855273105a1b 
+system_depends=
+depends=
+install=cp -a . "$DESTDIR/"
