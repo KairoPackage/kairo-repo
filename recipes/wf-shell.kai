@@ -1,6 +1,6 @@
 name=wf-shell
 version=0.10.0
-source=https://github.com/WayfireWM/wf-shell/archive/refs/tags/v0.10.0.tar.gz
+source=https://github.com/KairoPackage/kairo-repo/releases/download/wf-shell-source-0.10.0/wf-shell-0.10.0-kairo.tar.gz
 sha256=77ca0dbf037cd8dcb3a39efe56320cc3b3c5d9b5eedc2ca76e614d84a23983b8
 system_depends=meson,ninja,pkg-config
 depends=
