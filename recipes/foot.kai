@@ -3,6 +3,6 @@ version=1.24.0
 source=https://codeberg.org/dnkl/foot/archive/1.24.0.tar.gz
 sha256=e86cf92895f16bbd3f02c6bae706717790f5a7a686bc37182d715a3defe73349
 system_depends=gcc
-depends=meson,ninja,pkgconf,wayland
+depends=meson,ninja,pkgconf,wayland,libxkbcommon
 build=meson setup build --prefix=/usr/local --buildtype=release -Dtests=false -Ddocs=disabled && meson compile -C build
 install=meson install -C build --destdir "$DESTDIR"
