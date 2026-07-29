@@ -1,0 +1,8 @@
+name=binutils
+version=2.46.0
+source=https://ftp.gnu.org/gnu/binutils/binutils-2.46.0.tar.xz
+sha256=d75a94f4d73e7a4086f7513e67e439e8fcdcbb726ffe63f4661744e6256b2cf2
+system_depends=gcc,g++,make,bison,flex
+depends=zlib
+build=mkdir -p build && cd build && ../configure --prefix=/usr/local --disable-nls --disable-werror --enable-gprofng=no && make -j$(nproc)
+install=make -C build DESTDIR="$DESTDIR" install
