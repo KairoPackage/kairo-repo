@@ -1,0 +1,8 @@
+name=gcc
+version=15.3.0
+source=https://sourceware.org/pub/gcc/releases/gcc-15.3.0/gcc-15.3.0.tar.xz
+sha256=fa59c1beef8995f27c4d71c1df227587189315d3e6faff1bb4306e61b0c530eb
+system_depends=gcc,g++,make,bison,flex,perl
+depends=zlib
+build=./contrib/download_prerequisites && mkdir -p build && cd build && ../configure --prefix=/usr/local --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libsanitizer && make -j$(nproc)
+install=make -C build DESTDIR="$DESTDIR" install
