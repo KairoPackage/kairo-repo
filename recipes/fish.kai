@@ -1,0 +1,6 @@
+name=fish
+version=4.0.9
+source=https://github.com/fish-shell/fish-shell/releases/download/4.0.9/fish-4.0.9.tar.xz
+sha256=3decb552c93a2abbba7e43211a33b6c2ec2aeaf285b738fe4b50f9013f8551f6
+build=cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr && cmake --build build -j$(nproc)
+install=cmake --install build

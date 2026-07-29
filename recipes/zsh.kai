@@ -1,0 +1,6 @@
+name=zsh
+version=5.9.2
+source=https://www.zsh.org/pub/zsh-5.9.2.tar.xz
+sha256=36fa734374b44783582cec09bcd67822e2f992c779ec1624ab5596df078d2f81
+build=./configure --prefix=/usr && make -j$(nproc)
+install=make install
