@@ -1,0 +1,8 @@
+name=curl
+version=8.17.0
+source=https://curl.se/download/curl-8.17.0.tar.xz
+sha256=955f6e729ad6b3566260e8fef68620e76ba3c31acf0a18524416a185acf77992
+system_depends=gcc,make
+depends=openssl,zlib
+build=PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig ./configure --prefix=/usr/local --with-openssl=/usr/local --with-zlib=/usr/local --without-libpsl && make -j$(nproc)
+install=make DESTDIR="$DESTDIR" install
