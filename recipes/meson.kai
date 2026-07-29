@@ -1,0 +1,8 @@
+name=meson
+version=1.11.1
+source=https://github.com/mesonbuild/meson/releases/download/1.11.1/meson-1.11.1.tar.gz
+sha256=6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866
+system_depends=
+depends=python,ninja
+build=python3 setup.py build
+install=python3 setup.py install --root="$DESTDIR" --prefix=/usr/local
