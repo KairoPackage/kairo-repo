@@ -1,0 +1,8 @@
+name=libinput
+version=1.31.0
+source=https://gitlab.freedesktop.org/libinput/libinput/-/archive/1.31.0/libinput-1.31.0.tar.gz
+sha256=5f95a8ce039b3b2b4560a60bbdb920518d41baa9419344e5878c94bd841d5a54
+system_depends=gcc
+depends=meson,ninja,pkgconf
+build=meson setup build --prefix=/usr/local --buildtype=release -Ddocumentation=false -Dtests=false -Ddebug-gui=false -Dlibwacom=false && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
