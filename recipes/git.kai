@@ -1,0 +1,8 @@
+name=git
+version=2.55.0
+source=https://www.kernel.org/pub/software/scm/git/git-2.55.0.tar.xz
+sha256=457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357
+system_depends=gcc,make,perl
+depends=openssl,zlib,curl,expat
+build=make configure && ./configure --prefix=/usr/local --with-openssl=/usr/local --with-curl=/usr/local --with-expat=/usr/local && make -j$(nproc) NO_TCLTK=YesPlease
+install=make DESTDIR="$DESTDIR" NO_TCLTK=YesPlease install
