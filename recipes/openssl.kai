@@ -1,0 +1,8 @@
+name=openssl
+version=3.5.7
+source=https://github.com/openssl/openssl/releases/download/openssl-3.5.7/openssl-3.5.7.tar.gz
+sha256=a8c0d28a529ca480f9f36cf5792e2cd21984552a3c8e4aa11a24aa31aeac98e8
+system_depends=make,gcc,perl
+depends=zlib
+build=./Configure --prefix=/usr/local --openssldir=/usr/local/etc/ssl shared zlib && make -j$(nproc)
+install=make DESTDIR="$DESTDIR" install_sw install_ssldirs
