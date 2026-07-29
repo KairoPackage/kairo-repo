@@ -1,0 +1,8 @@
+name=glib
+version=2.86.5
+source=https://download.gnome.org/sources/glib/2.86/glib-2.86.5.tar.xz
+sha256=ce85a947bb8b3c0204dbeff79aec39bcb46371c6fafb64ba5b8726c71e038d5f
+system_depends=gcc
+depends=meson,ninja,pkgconf,python,zlib
+build=meson setup build --prefix=/usr/local --buildtype=release -Dtests=false -Ddocumentation=false -Dman-pages=disabled -Dlibmount=disabled -Dselinux=disabled && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
