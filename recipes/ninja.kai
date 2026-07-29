@@ -1,0 +1,8 @@
+name=ninja
+version=1.13.2
+source=https://github.com/ninja-build/ninja/archive/refs/tags/v1.13.2.tar.gz
+sha256=974d6b2f4eeefa25625d34da3cb36bdcebe7fbce40f4c16ac0835fd1c0cbae17
+system_depends=cmake
+depends=
+build=cmake -B build -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local && cmake --build build -j$(nproc)
+install=install -Dm755 build/ninja "$DESTDIR/usr/local/bin/ninja"
