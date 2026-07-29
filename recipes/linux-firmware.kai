@@ -1,0 +1,8 @@
+name=linux-firmware
+version=20260622
+binary=true
+source=https://www.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260622.tar.xz
+sha256=2b9d8a358e76eb766588609135e53fa548b902c551daae33ee32f26f25e60dbb
+system_depends=
+depends=
+install=mkdir -p "$DESTDIR/usr/lib/firmware" && cp -a "$(find . -maxdepth 1 -type d -name 'linux-firmware-*' -print -quit)/." "$DESTDIR/usr/lib/firmware/"
