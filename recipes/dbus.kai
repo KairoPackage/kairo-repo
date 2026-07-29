@@ -1,0 +1,8 @@
+name=dbus
+version=1.16.2
+source=https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz
+sha256=PASTE_HASH_HERE
+system_depends=gcc,make
+depends=
+build=./configure --prefix=/usr/local --sysconfdir=/etc --localstatedir=/var --disable-static --disable-doxygen-docs --disable-xml-docs --without-x && make -j$(nproc)
+install=make DESTDIR="$DESTDIR" install
