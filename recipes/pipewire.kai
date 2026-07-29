@@ -3,6 +3,6 @@ version=1.6.8
 source=https://gitlab.freedesktop.org/pipewire/pipewire/-/archive/1.6.8/pipewire-1.6.8.tar.gz
 sha256=8181172a1d95131f6af8bbc0b98f90b2a33349b042b84c3ce57dd5d11348cc58
 system_depends=gcc
-depends=meson,ninja,pkgconf
+depends=meson,ninja,pkgconf,alsa-lib
 build=meson setup build --prefix=/usr/local --buildtype=release -Ddocs=disabled -Dtests=disabled -Dexamples=disabled -Dman=disabled -Dsystemd=disabled -Dsession-managers=[] && meson compile -C build
 install=meson install -C build --destdir "$DESTDIR"
