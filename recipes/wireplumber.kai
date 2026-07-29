@@ -1,0 +1,8 @@
+name=wireplumber
+version=0.5.15
+source=https://gitlab.freedesktop.org/pipewire/wireplumber/-/archive/0.5.15/wireplumber-0.5.15.tar.gz
+sha256=baa121bc918df5fa0e0e70755bb1c99ffab0ab107225ecf99aa470e2c6ba5e7b
+system_depends=gcc
+depends=pipewire,meson,ninja,pkgconf
+build=meson setup build --prefix=/usr/local --buildtype=release -Dsystemd=disabled -Dtests=false -Ddoc=disabled -Dintrospection=disabled && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
