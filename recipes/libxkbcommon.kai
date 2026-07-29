@@ -1,0 +1,8 @@
+name=libxkbcommon
+version=1.13.2
+source=https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/xkbcommon-1.13.2.tar.gz
+sha256=acc4d5f7c3cbba5f9f8d08d8bdbeede84ecede46792f47929aa9321873385528
+system_depends=gcc,bison
+depends=meson,ninja,pkgconf,wayland
+build=meson setup build --prefix=/usr/local --buildtype=release -Denable-x11=false -Denable-docs=false -Denable-wayland=true && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
