@@ -1,0 +1,8 @@
+name=python
+version=3.14.6
+source=https://www.python.org/ftp/python/3.14.6/Python-3.14.6.tar.xz
+sha256=143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63
+system_depends=gcc,make
+depends=zlib,openssl
+build=./configure --prefix=/usr/local --enable-shared --with-ensurepip=install && make -j$(nproc)
+install=make DESTDIR="$DESTDIR" install
