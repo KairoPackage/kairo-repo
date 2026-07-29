@@ -1,0 +1,8 @@
+name=networkmanager
+version=1.54.0
+source=https://github.com/NetworkManager/NetworkManager
+sha256=c5356e5a86b351dc79d23c8685d02b91917d1f107628c97d370c6441a8322a93
+system_depends=gcc
+depends=meson,ninja,pkgconf,dbus
+build=meson setup build --prefix=/usr/local --sysconfdir=/etc --localstatedir=/var --buildtype=release -Dsystemd_journal=false -Dlibaudit=no -Dselinux=false -Dpolkit=false -Dmodem_manager=false -Dovs=false -Dppp=false -Dqt=false -Dtests=no && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
