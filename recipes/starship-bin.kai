@@ -1,0 +1,8 @@
+name=starship-bin
+version=1.25.0
+binary=true
+source=https://github.com/starship/starship/releases/download/v1.25.0/starship-x86_64-unknown-linux-musl.tar.gz
+sha256=0169f187e927a0ee9abf41bb80e316717fea6e37e404267bca5134c6ea10c0ed
+system_depends=
+depends=
+install=mkdir -p "$DESTDIR/usr/local/bin" && install -m755 "$(find . -type f -name starship -print -quit)" "$DESTDIR/usr/local/bin/starship"
