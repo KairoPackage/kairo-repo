@@ -3,6 +3,6 @@ version=26.1.5
 source=https://archive.mesa3d.org/mesa-26.1.5.tar.xz
 sha256=79e421c7ce18cd9e790b8375920325779f10798630bf30e0b22f1a21c8617122
 system_depends=gcc,g++,bison,flex
-depends=meson,ninja,pkgconf,wayland,wayland-protocols
+depends=meson,ninja,pkgconf,wayland,wayland-protocols,libdrm
 build=meson setup build --prefix=/usr/local --buildtype=release -Dplatforms=wayland -Dgallium-drivers=iris -Dvulkan-drivers=intel -Dglx=disabled -Degl=enabled -Dgles1=enabled -Dgles2=enabled -Dllvm=disabled -Dshared-glapi=enabled -Dvideo-codecs=[] && meson compile -C build
 install=meson install -C build --destdir "$DESTDIR"
