@@ -1,0 +1,8 @@
+name=iwd
+version=3.12
+source=https://www.kernel.org/pub/linux/network/wireless/iwd-3.12.tar.xz
+sha256=d89a5e45c7180170e19be828f9e944a768c593758094fc57a358d0e7c4cb1a49
+system_depends=gcc
+depends=meson,ninja,pkgconf,dbus,glib
+build=meson setup build --prefix=/usr/local --sysconfdir=/etc --localstatedir=/var --buildtype=release -Dsystemd_service=false -Dman=true && meson compile -C build
+install=meson install -C build --destdir "$DESTDIR"
