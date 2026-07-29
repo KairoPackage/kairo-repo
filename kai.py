@@ -94,8 +94,13 @@ def show_help():
     print("  kai install <package>")
     print("  kai update [package]")
     print("  kai checkupdates")
+    print("  kai upgrade")
     print("  kai remove <package>")
     print("  kai list")
+    print("  kai files <package>")
+    print("  kai owns <path>")
+    print("  kai verify <package>")
+    print("  kai clean")
     print("  kai sync [repo-url]")
     print("  kai self-update")
 
@@ -698,16 +703,19 @@ def read_database(name):
         return None
 
     package = {
-        "files": []
+        "files": [],
+        "hashes": {},
+        "links": {},
     }
 
     with open(
         database_file,
         "r",
+        encoding="utf-8",
     ) as file:
 
         for line in file:
-            line = line.strip()
+            line = line.rstrip("\n")
 
             if not line:
                 continue
@@ -727,12 +735,58 @@ def read_database(name):
                     value
                 )
 
+            elif key == "sha256":
+                try:
+                    filename, digest = (
+                        value.split("\t", 1)
+                    )
+                except ValueError:
+                    continue
+
+                package["hashes"][
+                    filename
+                ] = digest
+
+            elif key == "link":
+                try:
+                    filename, target = (
+                        value.split("\t", 1)
+                    )
+                except ValueError:
+                    continue
+
+                package["links"][
+                    filename
+                ] = target
+
             else:
                 package[
                     key
                 ] = value
 
     return package
+
+
+def collect_installed_metadata(files):
+    hashes = {}
+    links = {}
+
+    for filename in files:
+        path = Path(filename)
+
+        try:
+            if path.is_symlink():
+                links[filename] = os.readlink(path)
+
+            elif path.is_file():
+                hashes[filename] = (
+                    calculate_sha256(path)
+                )
+
+        except OSError:
+            continue
+
+    return hashes, links
 
 
 def write_database(
@@ -756,9 +810,14 @@ def write_database(
         DATABASE_DIR / name
     )
 
+    hashes, links = (
+        collect_installed_metadata(files)
+    )
+
     with open(
         database_file,
         "w",
+        encoding="utf-8",
     ) as file:
 
         file.write(
@@ -775,6 +834,24 @@ def write_database(
             file.write(
                 f"file={filename}\n"
             )
+
+        if hashes:
+            file.write("\n")
+
+            for filename in sorted(hashes):
+                file.write(
+                    f"sha256={filename}\t"
+                    f"{hashes[filename]}\n"
+                )
+
+        if links:
+            file.write("\n")
+
+            for filename in sorted(links):
+                file.write(
+                    f"link={filename}\t"
+                    f"{links[filename]}\n"
+                )
 
 
 # -------------------------------------------------
@@ -2357,6 +2434,347 @@ def list_packages():
 
 
 # -------------------------------------------------
+# FILE OWNERSHIP / VERIFICATION
+# -------------------------------------------------
+
+def installed_package_names():
+    if not DATABASE_DIR.exists():
+        return []
+
+    return sorted(
+        path.name
+        for path
+        in DATABASE_DIR.iterdir()
+        if path.is_file()
+    )
+
+
+def normalize_system_path(value):
+    expanded = os.path.expanduser(
+        value
+    )
+
+    return os.path.abspath(
+        expanded
+    )
+
+
+def package_files(name):
+    package = read_database(
+        name
+    )
+
+    if package is None:
+        print(
+            f"{name} is not "
+            f"installed by Kai."
+        )
+        return False
+
+    files = package.get(
+        "files",
+        [],
+    )
+
+    print(
+        f"Files owned by {name} "
+        f"({len(files)}):"
+    )
+
+    if not files:
+        print("  none")
+        return True
+
+    print()
+
+    for filename in files:
+        print(filename)
+
+    return True
+
+
+def find_file_owner(filename):
+    target = normalize_system_path(
+        filename
+    )
+
+    for name in installed_package_names():
+        package = read_database(
+            name
+        )
+
+        if not package:
+            continue
+
+        owned = {
+            normalize_system_path(path)
+            for path
+            in package.get("files", [])
+        }
+
+        if target in owned:
+            return name
+
+    return None
+
+
+def owns_path(filename):
+    target = normalize_system_path(
+        filename
+    )
+
+    owner = find_file_owner(
+        target
+    )
+
+    if owner is None:
+        print(
+            f"No Kai package owns: "
+            f"{target}"
+        )
+        return False
+
+    package = read_database(
+        owner
+    )
+
+    print(
+        f"{target} is owned by "
+        f"{owner} "
+        f"{package.get('version', 'unknown')}"
+    )
+
+    return True
+
+
+def verify_package(name):
+    package = read_database(
+        name
+    )
+
+    if package is None:
+        print(
+            f"{name} is not "
+            f"installed by Kai."
+        )
+        return False
+
+    files = package.get(
+        "files",
+        [],
+    )
+
+    expected_hashes = package.get(
+        "hashes",
+        {},
+    )
+
+    expected_links = package.get(
+        "links",
+        {},
+    )
+
+    missing = []
+    modified = []
+    verified = 0
+    untracked_hashes = 0
+
+    print(
+        f"Verifying {name} "
+        f"{package.get('version', 'unknown')}..."
+    )
+
+    for filename in files:
+        path = Path(filename)
+
+        if (
+            not path.exists()
+            and not path.is_symlink()
+        ):
+            missing.append(
+                filename
+            )
+            continue
+
+        if path.is_symlink():
+            expected = expected_links.get(
+                filename
+            )
+
+            if expected is None:
+                untracked_hashes += 1
+                continue
+
+            try:
+                actual = os.readlink(
+                    path
+                )
+            except OSError:
+                modified.append(
+                    filename
+                )
+                continue
+
+            if actual != expected:
+                modified.append(
+                    filename
+                )
+            else:
+                verified += 1
+
+            continue
+
+        expected = expected_hashes.get(
+            filename
+        )
+
+        if expected is None:
+            untracked_hashes += 1
+            continue
+
+        try:
+            actual = calculate_sha256(
+                path
+            )
+        except OSError:
+            missing.append(
+                filename
+            )
+            continue
+
+        if actual.lower() != expected.lower():
+            modified.append(
+                filename
+            )
+        else:
+            verified += 1
+
+    if missing:
+        print()
+        print("Missing files:")
+
+        for filename in missing:
+            print(
+                f"  {filename}"
+            )
+
+    if modified:
+        print()
+        print("Modified files:")
+
+        for filename in modified:
+            print(
+                f"  {filename}"
+            )
+
+    print()
+    print(
+        f"Verified: {verified}"
+    )
+    print(
+        f"Missing:  {len(missing)}"
+    )
+    print(
+        f"Modified: {len(modified)}"
+    )
+
+    if untracked_hashes:
+        print(
+            f"Unhashed: {untracked_hashes}"
+        )
+        print(
+            "Run an update or reinstall "
+            "to add verification hashes."
+        )
+
+    if missing or modified:
+        print()
+        print(
+            "Verification FAILED."
+        )
+        return False
+
+    print()
+    print(
+        "Verification passed."
+    )
+
+    return True
+
+
+# -------------------------------------------------
+# CLEAN
+# -------------------------------------------------
+
+def directory_size(path):
+    total = 0
+
+    if not path.exists():
+        return total
+
+    for item in path.rglob("*"):
+        try:
+            if item.is_file():
+                total += item.stat().st_size
+        except OSError:
+            continue
+
+    return total
+
+
+def human_size(size):
+    units = (
+        "B",
+        "KiB",
+        "MiB",
+        "GiB",
+        "TiB",
+    )
+
+    value = float(size)
+
+    for unit in units:
+        if value < 1024 or unit == units[-1]:
+            if unit == "B":
+                return f"{int(value)} {unit}"
+
+            return f"{value:.1f} {unit}"
+
+        value /= 1024
+
+    return f"{size} B"
+
+
+def clean_cache():
+    if not BUILD_DIR.exists():
+        print(
+            "Kai build cache is already clean."
+        )
+        return True
+
+    size = directory_size(
+        BUILD_DIR
+    )
+
+    try:
+        shutil.rmtree(
+            BUILD_DIR
+        )
+    except OSError as error:
+        print(
+            f"Could not clean cache: {error}"
+        )
+        return False
+
+    print(
+        f"Removed Kai build cache "
+        f"({human_size(size)})."
+    )
+
+    return True
+
+
+# -------------------------------------------------
 # REMOVE
 # -------------------------------------------------
 
@@ -2499,6 +2917,48 @@ def main():
 
     elif command == "checkupdates":
         check_updates()
+
+    elif command == "upgrade":
+        update_all_packages()
+
+    elif command == "files":
+        if len(sys.argv) < 3:
+            print(
+                "Usage: "
+                "kai files <package>"
+            )
+            return
+
+        package_files(
+            sys.argv[2]
+        )
+
+    elif command == "owns":
+        if len(sys.argv) < 3:
+            print(
+                "Usage: "
+                "kai owns <path>"
+            )
+            return
+
+        owns_path(
+            sys.argv[2]
+        )
+
+    elif command == "verify":
+        if len(sys.argv) < 3:
+            print(
+                "Usage: "
+                "kai verify <package>"
+            )
+            return
+
+        verify_package(
+            sys.argv[2]
+        )
+
+    elif command == "clean":
+        clean_cache()
 
     elif command == "remove":
         if len(sys.argv) < 3:
