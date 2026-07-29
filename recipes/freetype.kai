@@ -1,7 +1,7 @@
 name=freetype
 version=2.14.3
 source=https://download.savannah.gnu.org/releases/freetype/freetype-2.14.3.tar.xz
-sha256=PASTE_HASH_HERE
+sha256=36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f
 system_depends=gcc,make
 depends=zlib
 build=./configure --prefix=/usr/local --disable-static --with-zlib=yes --with-bzip2=no --with-png=no --with-harfbuzz=no && make -j$(nproc)
